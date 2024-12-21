@@ -1,0 +1,85 @@
+create database hamrolaptop;
+
+
+
+// table  creation
+
+CREATE TABLE users (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    fullname VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(15),
+    DOB DATE,
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_type ENUM('admin', 'user') DEFAULT 'user'
+);
+
+
+Create table second_hand_laptops(
+l_id int primary key auto_increment,
+l_name varchar(255),
+l_model varchar(255),
+l_specification varchar(1000),
+l_amount int (8),
+l_image varchar(255),
+l_uploaddate date,
+l_userid int,
+FOREIGN KEY (l_userid) REFERENCES users(id)
+);
+
+
+Create table displayed_laptops(
+l_id int primary key auto_increment,
+l_name varchar(255),
+l_model varchar(255),
+l_specification varchar(1000),
+l_amount int (8),
+l_image varchar(255),
+l_uploaddate date
+);
+
+
+Create table budget_laptops(
+l_id int primary key auto_increment,
+l_name varchar(255),
+l_model varchar(255),
+l_specification varchar(1000),
+l_amount int (8),
+l_image varchar(255),
+l_uploaddate date,
+);
+
+Create table orders(
+
+o_id int primary key auto_increment,
+o_date date,
+o_laptopid int,
+FOREIGN KEY (o_laptopid) REFERENCES second_hand_laptops(l_id)
+
+);
+
+ALTER TABLE orders
+ADD o_userid INT,
+ADD FOREIGN KEY (o_userid) REFERENCES users(id);
+
+
+Create table payments(
+p_id int primary key auto_increment,
+p_date date,
+p_laptopid int,
+p_userid int,
+FOREIGN KEY (p_laptopid) REFERENCES second_hand_laptops(l_id),
+FOREIGN KEY (p_userid) REFERENCES users(id)
+);
+
+ALTER TABLE second_hand_laptops
+MODIFY COLUMN l_uploaddate DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+
+ALTER TABLE displayed_laptops
+MODIFY COLUMN l_uploaddate DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE budget_laptops
+MODIFY COLUMN l_uploaddate DATETIME DEFAULT CURRENT_TIMESTAMP;
