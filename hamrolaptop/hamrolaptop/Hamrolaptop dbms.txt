@@ -1,0 +1,172 @@
+create database hamrolaptop;
+
+CREATE TABLE users (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    fullname VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(15),
+    DOB DATE,
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_type ENUM('admin', 'user') DEFAULT 'user'
+);
+
+
+
+Create table second_hand_laptops(
+l_id int primary key auto_increment,
+l_name varchar(255),
+l_model varchar(255),
+l_processor varchar(1000),
+l_ram varchar(10),
+l_storage varchar(255),
+l_display varchar(255),
+l_addinfo varchar(1000),
+l_amount int (8),
+l_image varchar(255),
+l_uploaddate DATETIME DEFAULT CURRENT_TIMESTAMP,
+l_userid int,
+FOREIGN KEY (l_userid) REFERENCES users(id)
+);
+
+ALTER TABLE second_hand_laptops DROP FOREIGN KEY second_hand_laptops_ibfk_1;
+
+Create table budget_laptops(
+l_id int primary key auto_increment,
+l_name varchar(255),
+l_model varchar(255),
+l_processor varchar(1000),
+l_ram varchar(10),
+l_storage varchar(255),
+l_display varchar(255),
+l_addinfo varchar(1000),
+l_amount int (8),
+l_image varchar(255),
+l_uploaddate DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
+Create table displayed_laptops(
+l_id int primary key auto_increment,
+l_name varchar(255),
+l_model varchar(255),
+l_processor varchar(1000),
+l_ram varchar(10),
+l_storage varchar(255),
+l_display varchar(255),
+l_addinfo varchar(1000),
+l_amount int (8),
+l_image varchar(255),
+l_uploaddate DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
+Create table orders(
+
+o_id int primary key auto_increment,
+o_date date,
+o_laptopid int,
+FOREIGN KEY (o_laptopid) REFERENCES second_hand_laptops(l_id)
+
+);
+
+ALTER TABLE orders
+ADD o_userid INT,
+ADD FOREIGN KEY (o_userid) REFERENCES users(id);
+
+
+Create table payments(
+p_id int primary key auto_increment,
+p_date date,
+p_laptopid int,
+p_userid int,
+FOREIGN KEY (p_laptopid) REFERENCES second_hand_laptops(l_id),
+FOREIGN KEY (p_userid) REFERENCES users(id)
+);
+
+
+//updating the users table
+ 
+ remove the dob COLUMN
+
+ALTER TABLE users
+DROP COLUMN DOB;
+
+remove the CURRENT_TIMESTAMP from created_at COLUMN
+
+ALTER TABLE users
+MODIFY COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+
+//creating cart table
+
+CREATE TABLE cart (
+    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,                  
+    laptop_id INT NOT NULL,                              
+    added_at DATE,
+    
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_laptop_id FOREIGN KEY (laptop_id) REFERENCES second_hand_laptops(l_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE wishlist (
+    wishlist_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,                  
+    blaptop_id INT NOT NULL,   
+    dlaptop_id INT NOT NULL,                           
+    added_at DATE,
+    
+    CONSTRAINT fk_wuser_id FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_blaptop_id FOREIGN KEY (blaptop_id) REFERENCES budget_laptops(l_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT fk_dlaptop_id FOREIGN KEY (dlaptop_id) REFERENCES displayed_laptops(l_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+ALTER TABLE cart
+MODIFY COLUMN added_at DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE users
+MODIFY COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+
+// creating wishlist table;
+
+CREATE TABLE wishlist (
+    wishlist_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,                  
+    blaptop_id INT DEFAULT NULL,           
+    dlaptop_id INT DEFAULT NULL,        
+    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_wuser_id FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_blaptop_id FOREIGN KEY (blaptop_id) REFERENCES budget_laptops(l_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_dlaptop_id FOREIGN KEY (dlaptop_id) REFERENCES displayed_laptops(l_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+//add the user profile image column in users table
+
+alter table users add column image varchar(255);
+
+
+// add the foreign key constraint with cascade in INT
+
+ALTER TABLE second_hand_laptops
+ADD CONSTRAINT fk_second_hand_user
+FOREIGN KEY (user_id)
+REFERENCES users(id)
+ON DELETE CASCADE;
+
+
+
