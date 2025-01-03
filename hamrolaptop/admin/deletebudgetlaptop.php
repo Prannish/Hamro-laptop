@@ -1,5 +1,12 @@
 <?php
-    include("../connection.php");
+include "../connection.php";
+session_start();
+if (!isset($_SESSION['name'])) {
+  header("location: ../login.php");
+  exit();
+}
+
+
 
     $laptopId = $_GET['id'];
     $sql = "delete from budget_laptops where l_id=$laptopId";

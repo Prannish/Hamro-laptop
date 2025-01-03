@@ -1,6 +1,10 @@
 <?php
 include "connection.php";
 session_start();
+
+if (isset($_SESSION['name'])) {
+  header("location: /user/index.php");
+} 
 ?>
 
 <!DOCTYPE html>
@@ -59,6 +63,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               $_SESSION['id'] = $row['id'];
               $_SESSION['name'] = $row['fullname'];
               $_SESSION['email'] = $row['email'];
+              $_SESSION['phone'] = $row['phone'];
+              $_SESSION['imageUrl'] = $row['image'];
+              
 
               //logic to check whether the user_type is user or admin and redirect accordingly..
              if($row['user_type']=="admin"){
@@ -68,7 +75,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               header('Location: user/buy.php');
              }
             
-
           } else {
               $dbError = "Invalid Password";
           }
@@ -90,7 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <span id="logpassworderr" style="color:red;"></span> 
           <input type="password" placeholder="Password" id="logpassword" name="logpassword" value="<?php echo $enteredPassword; ?>" />
           <span style="color:red;"><?php echo $dbError; ?></span>
-          <a href="#">Forget Your Password?</a>
           <button type="submit">Login</button>
         </form>
       </div>
@@ -130,6 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 return true;
             }
             else{
+     
                 return false;
             }
 

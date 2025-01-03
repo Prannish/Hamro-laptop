@@ -1,7 +1,10 @@
 <?php
+include "../connection.php";
 session_start();
-include("../connection.php");
-
+if (!isset($_SESSION['name'])) {
+  header("location: ../login.php");
+  exit();
+}
 
 ?>
 
@@ -11,7 +14,7 @@ include("../connection.php");
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Laptop_list</title>
+    <title>User_Uploaded_Laptop_list</title>
     <link rel="website icon" href="logo.jpg" type="h/jpg" />
     <link rel="stylesheet" href="../style.css" />
     <style>
@@ -87,88 +90,161 @@ table a {
         <div class="slide">
             <br><br>
             <ul>
-                <li><a href="../index.html"><i class="fas fa-solid fa-house"></i>Home</a></li>
-                <li><a href="../event.php"><i class="fab fa-gripfire"></i>Events</a></li>
-                <li><a href="../budget.php"><i class="fa-solid fa-laptop-code"></i>Budget Laptops</a></li>
-                <li><a href="../userdashboard.php"><i class="fa-solid fa-laptop"></i>Second-hand Laptops</a></li>
-                <div class="../gapbuysell">
-
-                    <li><a href="buy.php"><i class="fa-solid fa-cart-plus"></i>Buy</a></li>
-                    <li><a href="sell.php"><i class="fa-solid fa-sack-dollar"></i></i>Sell</a></li>
-                </div>
-
-                <li><a href="profile.php"><i class="fa-solid fa-user"></i>Your Profile</a></li>
-                <li><a href="about.html"><i class="fa-solid fa-info"></i>About</a></li>
+                <li><a href="admindashboard.php"><i class="fas fa-solid fa-house"></i>Home</a></li>
             </ul>
         </div>
     </label>
-    <!--side bar Nav ends here-->
+<!--side bar Nav ends here-->
 
-    <!--Nav bar-->
-    <nav class="navbar">
-        <div class="navdiv">
-            <div class="logo">
+<!--Nav bar-->
+<nav class="navbar">
+  <div class="navdiv">
+    <div class="logo">
 
-                <a href="index.html" class="title">Hamro laptop
+      <a href="admindashboard.php" class="title">Hamro laptop
 
-                </a>
-                <a style="margin-left: 190px;"> <img src="logo.jpg" height="30" /></a>
-            </div>
-            <ul>
-                <button><a href="../logout.php">Logout</a></button>
-            </ul>
-        </div>
-    </nav>
-    <br />
-    <!--nav bar ends here-->
-        <h1 align="center">View user uploaded Laptop <button><a href="admindashboard.php" style="font-size:30px; color:darkgreen;">X</a></button> </h1>
+      </a>
+      <a style="margin-left: 190px;"> <img src="logo.jpg" height="30" /></a>
+    </div>
+    <ul>
+      <button><a href="../logout.php">Logout</a></button>
+  
+    </ul>
+  </div>
+</nav>
+<br />
+<!--nav bar ends here-->
+    <h1 align="center">Pending User Uploaded Laptops<button><a href="admindashboard.php" style="font-size:30px; color:darkred;">X</a></button> </h1>
         <table class="table table-success table-striped">
         <thead>
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Laptop Name</th>
-                <th scope="col">Laptop Model</th>
-                <th scope="col">Laptop Specification</th>
+                <th scope="col">Laptop Specifications</th>
+                <th scope="col">Laptop Additional Details</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Image</th>
                 <th scope="col">Upload Date</th>
+                <th scope="col">Uploaded By</th>
+                <th scope="col">Status</th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php
-                $sql = "SELECT l_id,l_name,l_model,l_specification,l_amount,l_image,l_uploaddate from second_hand_laptops";
+                $sql = "SELECT s.l_id,s.l_name,u.fullname as username,s.l_model,s.l_processor,s.l_ram,s.l_storage,s.l_display,s.l_amount,s.l_addinfo,s.l_image,s.l_uploaddate,s.approval_status from second_hand_laptops s join users u on s.l_userid = u.id where s.approval_status = 'pending'";
                 $result = mysqli_query($conn, $sql);
 
+               
+
                 if ($result) {
+                   
                     while ($row = mysqli_fetch_assoc($result)) {
-                        $id = $row['l_id'];
-                        $name = $row['l_name'];
-                        $model = $row['l_model'];
-                        $specification = $row['l_specification'];
-                        $amount = $row['l_amount'];
+                        $l_id = $row['l_id'];
+                        $l_name = $row['l_name'];
+                        $l_model = $row['l_model'];
+                        $l_processor = $row['l_processor'];
+                        $l_ram = $row['l_ram'];
+                        $l_storage = $row['l_storage'];
+                        $l_display = $row['l_display'];
+                        $l_amount = $row['l_amount'];
+                        $l_addinfo = $row['l_addinfo'];
+                        $imageUrl = $row['l_image'];
                         $uploaddate = $row['l_uploaddate'];
-                        $imageUrl = ($row['l_image']);
+                        $status = $row['approval_status'];
+                        $username = $row['username'];
                         
                         // Display each row
                         echo "
                         <tr>
-                            <th scope='row'>$id</th>
-                            <td>$name</td>
-                            <td>$model</td>
-                            <td>$specification</td>
-                            <td>$amount</td>
-                              <td><img src='../user_upload_laptops/$imageUrl' alt='Image' style='width: 100px; height: auto;'></td>
+                            <th scope='row'>$l_id</th>
+                            <td>$l_name</td>
+                            <td>$l_model $l_processor $l_ram $l_storage $l_display</td>
+                            <td>$l_addinfo</td>
+                            <td>$l_amount</td>
+                              <td><img src='../second_hand_laptops/$imageUrl' alt='Image' style='width: 100px; height: auto;'></td>
                             <td>$uploaddate</td>
+                            <td>$username</td>
+                            <td>$status</td>
                             <td>
-                                 <a href='approve.php?id=$id' class='colorupdate' />Approve</a>
-                            <a href='deleteuploadlaptop.php?id=$id' class='colordelete' onclick='return confirmDelete()' >Delete</a>
+                                 <a href='approve.php?id=$l_id' class='colorupdate' />Approve</a>
+                            <a href='reject.php?id=$l_id' class='colordelete'  onclick='return confirmDelete()'>Reject</a>
                             </td>
                         </tr>
                         ";
                     }
-                } else {
-                    echo "<tr><td colspan='6'>No blog entries found.</td></tr>";
+                }
+                else {
+                    echo "<tr><td colspan='6'>No laptops found.</td></tr>";
+                }
+
+                
+            ?>
+            </tbody>
+        </table>
+
+
+
+
+        <h1 align="center">Approved User Uploaded Laptops</h1>
+        <table class="table table-success table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Laptop Name</th>
+                <th scope="col">Laptop Specifications</th>
+                <th scope="col">Laptop Additional Details</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Image</th>
+                <th scope="col">Upload Date</th>
+                <th scope="col">Uploaded By</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                $sql = "SELECT s.l_id,s.l_name,u.fullname as username,s.l_model,s.l_processor,s.l_ram,s.l_storage,s.l_display,s.l_amount,s.l_addinfo,s.l_image,s.l_uploaddate,s.approval_status from second_hand_laptops s join users u on s.l_userid = u.id";
+                $result = mysqli_query($conn, $sql);
+
+               
+
+                if ($result) {
+                   
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $l_id = $row['l_id'];
+                        $l_name = $row['l_name'];
+                        $l_model = $row['l_model'];
+                        $l_processor = $row['l_processor'];
+                        $l_ram = $row['l_ram'];
+                        $l_storage = $row['l_storage'];
+                        $l_display = $row['l_display'];
+                        $l_amount = $row['l_amount'];
+                        $l_addinfo = $row['l_addinfo'];
+                        $imageUrl = $row['l_image'];
+                        $uploaddate = $row['l_uploaddate'];
+                        $username = $row['username'];
+                        $status = $row['approval_status'];
+                        
+                        // Display each row
+                        echo "
+                        <tr>
+                            <th scope='row'>$l_id</th>
+                            <td>$l_name</td>
+                            <td>$l_model $l_processor $l_ram $l_storage $l_display</td>
+                            <td>$l_addinfo</td>
+                            <td>$l_amount</td>
+                              <td><img src='../second_hand_laptops/$imageUrl' alt='Image' style='width: 100px; height: auto;'></td>
+                            <td>$uploaddate</td>
+                            <td>$username</td>
+                            <td>$status</td>
+                            <td><a href='reject.php?id=$l_id' class='colordelete'  onclick='return confirmDelete()'>Reject</a></td>
+                        </tr>
+                        ";
+                    }
+                }
+                else {
+                    echo "<tr><td colspan='6'>No laptops found.</td></tr>";
                 }
 
                 // Close the connection
@@ -176,9 +252,14 @@ table a {
             ?>
             </tbody>
         </table>
+
+
+
+
+        
         <script>
             function confirmDelete() {
-                return confirm("Are you sure you want to delete this user?");
+                return confirm("Are you sure you want to reject the laptop uploaded by user?");
             };
         </script>
 </body>

@@ -1,5 +1,10 @@
 <?php
 include("connection.php");
+session_start();
+if (isset($_SESSION['name'])) {
+  header("location: user/index.php");
+  exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,6 +81,11 @@ include("connection.php");
   background-color: #e0a800;
 }
 
+.parag{
+  font-size: 15px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
 
     </style>
   </head>
@@ -137,46 +147,157 @@ include("connection.php");
           <h1 style=" font-size: 50px; text-align:center;">Find Perfect Laptop For You</h1>
       
           <!--search bar-->
+          <form action="" method="GET">
           <div class="searchbar">
             <img src="search.png" height="40" class="searchimg" />
-            <input type="search" placeholder="Search.." class="searchinput" />
-            <button class="searchbtn"><a>Search</a></button>
+            <input type="search" placeholder="Search.." class="searchinput"  value="<?php if(isset($_GET['search'])){echo $_GET['search'];} ?>" name="search" required/>
+            <button type="submit" class="searchbtn"><a>Search</a></button>
           </div>
+          </form>
           <br>
+           <!-- search Section -->
+
+           <div id="cardcontainer">
+           <?php
+            //search bar code for displayed laptops
+            if(isset($_GET['search'])){
+              $search = $_GET['search'];
+              $sql = "
+              SELECT * FROM displayed_laptops WHERE l_name LIKE '%$search%'
+              UNION 
+              SELECT * FROM budget_laptops WHERE l_name LIKE '%$search%'
+              ";
+              $result = mysqli_query($conn, $sql);
+              if (mysqli_num_rows($result) > 0) {
+        foreach ($result as $row) {
+                  $l_id = $row['l_id'];
+                  $l_name = $row['l_name'];
+                  $l_model = $row['l_model'];
+                  $l_processor = $row['l_processor'];
+                  $l_ram = $row['l_ram'];
+                  $l_storage = $row['l_storage'];
+                  $l_display = $row['l_display'];
+                  $l_amount = $row['l_amount'];
+                  $l_addinfo = $row['l_addinfo'];
+                  $imageUrl = $row['l_image'];
+                  echo "
+                  <div>
+                    <b>$l_name</b>
+                    <img src='displayed_laptops/$imageUrl' alt='$l_name'>
+                    <div class='parag'>
+                    <p>Price: NPR $l_amount</p>
+                    <br>
+                    <p style='text-align:left; color:green;'>Specification:</p>
+                    <p style='text-align:left;'>Model: $l_model</p>
+                    <p style='text-align:left;'>Processor: $l_processor</p>
+                    <p style='text-align:left;'>Ram: $l_ram</p>
+                    <p style='text-align:left;'>Storage: $l_storage</p>
+                    <p style='text-align:left;'>Display: $l_display</p>
+                    <br>
+                  </div></div>";
+              
+                }
+              } else {  //if no result found
+                echo "<h1 style='text-align:center;color:red;'>No result found</h1>";   
+              }
+             }
+             ?>
+          </div>
+<!--end of search bar code-->
+
+
           <!--Search bar ends-->
           <h1 style=" font-size: 20px; text-align:center;">Top Picks in Cutting-Edge Laptops</h1>
       
           <!-- Cards Section -->
-          <div id="cardcontainer">
-            <?php
-            $sql = "SELECT l_id, l_name, l_model, l_specification, l_amount, l_image ,l_uploaddate FROM displayed_laptops";
+         
+
+          
+<div id="cardcontainer">
+
+<?php
+                $sql = "SELECT l_id,l_name,l_model,l_processor,l_ram,l_storage,l_display,l_amount,l_addinfo,l_image from displayed_laptops";
+              
             $result = mysqli_query($conn, $sql);
       
             if ($result) {
               while ($row = mysqli_fetch_assoc($result)) {
-                $id = $row['l_id'];
-                $name = $row['l_name'];
-                $model = $row['l_model'];
-                $specification = $row['l_specification'];
-                $amount = $row['l_amount'];
-                $uploaddate = $row['l_uploaddate'];
+                $l_id = $row['l_id'];
+                $l_name = $row['l_name'];
+                $l_model = $row['l_model'];
+                $l_processor = $row['l_processor'];
+                $l_ram = $row['l_ram'];
+                $l_storage = $row['l_storage'];
+                $l_display = $row['l_display'];
+                $l_amount = $row['l_amount'];
+                $l_addinfo = $row['l_addinfo'];
                 $imageUrl = $row['l_image'];
       
                 echo "
                 <div>
-                  <b>$name</b>
-                  <img src='displayed_laptops/$imageUrl' alt='$name'>
-                  <p>Price: NPR $amount</p>
-                  <p>Model: NPR $model</p>
-                  
-                  <p>Specification</p>
-                  <p>$specification</p>
-                </div>";
+                  <b>$l_name</b>
+                  <img src='displayed_laptops/$imageUrl' alt='$l_name'>
+<div class='parag'>
+                  <p>Price: NPR $l_amount</p>
+                  <br>
+                  <p style='text-align:left; color:green;'>Specification:</p>
+                  <p style='text-align:left;'>Model: $l_model</p>
+                  <p style='text-align:left;'>Processor: $l_processor</p>
+                  <p style='text-align:left;'>Ram: $l_ram</p>
+                  <p style='text-align:left;'>Storage: $l_storage</p>
+                  <p style='text-align:left;'>Display: $l_display</p>
+                  <br>
+                </div></div>";
               }
             }
             ?>
           </div>
         </div>
+
+
+        <!-- budget laptop section -->
+        <h1 style=" font-size: 20px; text-align:center;">Budget Laptop Section</h1>
+      
+      <!-- Cards Section -->
+      <div id="cardcontainer">
+        <?php
+            $sql = "SELECT l_id,l_name,l_model,l_processor,l_ram,l_storage,l_display,l_amount,l_addinfo,l_image from budget_laptops";
+          
+        $result = mysqli_query($conn, $sql);
+  
+        if ($result) {
+          while ($row = mysqli_fetch_assoc($result)) {
+            $l_id = $row['l_id'];
+            $l_name = $row['l_name'];
+            $l_model = $row['l_model'];
+            $l_processor = $row['l_processor'];
+            $l_ram = $row['l_ram'];
+            $l_storage = $row['l_storage'];
+            $l_display = $row['l_display'];
+            $l_amount = $row['l_amount'];
+            $l_addinfo = $row['l_addinfo'];
+            $imageUrl = $row['l_image'];
+  
+            echo "
+            <div>
+              <b>$l_name</b>
+              <img src='budget_laptops/$imageUrl' alt='$l_name'>
+<div class='parag'>
+              <p>Price: NPR $l_amount</p>
+              <br>
+              <p style='text-align:left; color:green;'>Specification:</p>
+              <p style='text-align:left;'>Model: $l_model</p>
+              <p style='text-align:left;'>Processor: $l_processor</p>
+              <p style='text-align:left;'>Ram: $l_ram</p>
+              <p style='text-align:left;'>Storage: $l_storage</p>
+              <p style='text-align:left;'>Display: $l_display</p>
+              <br>
+            </div></div>";
+          }
+        }
+        ?>
+      </div>
+    </div>
       </main>
       
 

@@ -40,18 +40,28 @@ include "connection.php";
     $enteredPhone="";
     $enteredDob="";
     $enteredAddress="";
+    $uploadDir = 'user_pictures/'; 
 
     $dbError = "";
 
 
      if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+      if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+
         $enteredName = $_POST['name'];
         $enteredEmail = $_POST['email'];
         $enteredPassword = $_POST['password'];
         $enteredPhone = $_POST['phone'];
-        $enteredDob = $_POST['dob'];
         $enteredAddress = $_POST['address'];
+
+        $image = $_FILES['image'];
+        $imageName = $image['name'];
+        // str_replace(" ","_",$image['name']);
+        $imageTmpName = $image['tmp_name'];
+        $imagePath = $uploadDir . $imageName;
+        
+        if (move_uploaded_file($imageTmpName, $imagePath)) {
 
       
             // echo "You can now save the data to server";
@@ -65,19 +75,30 @@ include "connection.php";
               $dbError = "";
             // e - if not save data in table : id,name, email,password,number,dob,address
               $hashedPassword = password_hash($enteredPassword, PASSWORD_DEFAULT);
-                $sql = "insert into users(fullname,email,password,phone,DOB,address) values('$enteredName','$enteredEmail','$hashedPassword','$enteredPhone','$enteredDob','$enteredAddress')";
+                $sql = "insert into users(fullname,email,password,phone,address,image) values('$enteredName','$enteredEmail','$hashedPassword','$enteredPhone','$enteredAddress','$imagePath')";
         
               $result = mysqli_query($conn, $sql); // returns True if data is inserted
               if ($result) {
                // f - Redirect user on login page
+               echo "<script>alert('Signup successful!');</script>";
                 header('Location: login.php');
               
               }
+              else{
+                echo "Error: " . $conn->error;
+            }
             // }
         
         }
     }
-
+    else{
+      echo "Failed to upload image!";
+    }
+  }
+  else{
+    echo "Image not uploaded or upload error!";
+  }
+}
     
    ?>
 
@@ -86,10 +107,13 @@ include "connection.php";
 
     <div class="loginsignupcontainer">
       <div class="loginsignupform-container logsign-in">
-        <form method = "POST" action="<?php echo $_SERVER["PHP_SELF"]?>" onsubmit="return validateForm()">
+        <form method = "POST" action="<?php echo $_SERVER["PHP_SELF"]?>" onsubmit="return validateForm()" enctype="multipart/form-data">
           <h1>Create Account</h1>
           <span id="nameerr" style="color:red;"></span>
           <input id="name"  name="name" type="text" placeholder="Name" value="<?php echo $enteredName; ?>" />
+        
+          <label for="image" style="color: black; font-size: 12px; margin-left: -230px;">Upload Image:</label> <span id="imageerr" style="color:red;"></span>
+          <input type="file" id="image" name="image" style="color: black;" accept="image/*">
 
           <span id="emailerr" style="color:red;"></span>
           <span style="color:red;"><?php echo $dbError;?></span>
@@ -103,9 +127,6 @@ include "connection.php";
           
           <span id="phoneerr" style="color:red;"></span>
           <input id="phone"  name="phone" type="number" placeholder="Phone Number" value="<?php echo $enteredPhone; ?>"/>
-
-          <span id="doberr" style="color:red;"></span>
-          <input id="dob"  name="dob" type="date" placeholder="Date-of-birth" value="<?php echo $enteredDob; ?>"/>
 
           <span id="addresserr" style="color:red;"></span>
           <input id="address" name="address" type="text" placeholder="Address" value="<?php echo $enteredAddress; ?>" />
@@ -133,12 +154,17 @@ include "connection.php";
             const password = document.getElementById("password").value;
             const confirmpassword = document.getElementById("confirmpassword").value;
             const phone = document.getElementById("phone").value;
-            const dob = document.getElementById("dob").value;
             const address = document.getElementById("address").value;
+            const image = document.getElementById("image").value;
             let hasError = false;
                 // return true;
             if(name === ""){
                 document.getElementById("nameerr").innerHTML = "Name is required!";
+                hasError =  true;
+            }
+
+            if(image === ""){
+                document.getElementById("imageerr").innerHTML = "Image is required!";
                 hasError =  true;
             }
 
@@ -148,29 +174,20 @@ include "connection.php";
                 hasError = true;
             }
             
-            if(password === "" || password <= 6){
-                document.getElementById("passworderr").innerHTML = "Password must be more than 6 characters!";
-                
-                hasError = true;
-            }
+            if (password === "" || password.length <= 6) {
+    document.getElementById("passworderr").innerHTML = "Password must be more than 6 characters!";
+    hasError = true;
+}
 
-            if(confirmpassword === "" || !confirmpassword === password){
-                document.getElementById("confirmpassworderr").innerHTML = "Passwords don't match!";
-                
-                hasError = true;
-            }
+if (confirmpassword === "" || confirmpassword !== password) {
+    document.getElementById("confirmpassworderr").innerHTML = "Passwords do not match!";
+    hasError = true;
+}
 
-            if(phone === "" || !phone === 10 ){
-                document.getElementById("phoneerr").innerHTML = "Phone number don't exist!";
-                
-                hasError = true;
-            }
-
-            if(dob === ""){
-                document.getElementById("doberr").innerHTML = "DOB must be entered!";
-                
-                hasError = true;
-            }
+if (phone === "" || phone.length !== 10 || isNaN(phone)) {
+    document.getElementById("phoneerr").innerHTML = "Phone number must be exactly 10 digits!";
+    hasError = true;
+}
 
             if(address === ""){
                 document.getElementById("addresserr").innerHTML = "Not a valid address!";

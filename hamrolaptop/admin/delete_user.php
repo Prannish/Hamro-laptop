@@ -1,5 +1,12 @@
 <?php
-include('../connection.php');
+include "../connection.php";
+session_start();
+if (!isset($_SESSION['name'])) {
+  header("location: ../login.php");
+  exit();
+}
+
+
 if (isset($_GET['id'])) {
     $user_id = $_GET['id'];
 

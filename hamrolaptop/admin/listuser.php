@@ -1,6 +1,11 @@
 <?php
+include "../connection.php";
 session_start();
-include("../connection.php");
+if (!isset($_SESSION['name'])) {
+  header("location: ../login.php");
+  exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -11,7 +16,8 @@ include("../connection.php");
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>orders</title>
     <link rel="website icon" href="logo.jpg" type="h/jpg" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css
+"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="../style.css" />
@@ -76,8 +82,8 @@ table a {
 </head>
 
 <body>
-    <!--side bar Nav starts here-->
-    <label>
+     <!--side bar Nav starts here-->
+     <label>
         <input type="checkbox" class="checkbox">
         <div class="toggle">
             <span class="top_line common"></span>
@@ -87,41 +93,30 @@ table a {
         <div class="slide">
             <br><br>
             <ul>
-                <li><a href="../index.html"><i class="fas fa-solid fa-house"></i>Home</a></li>
-                <li><a href="../event.php"><i class="fab fa-gripfire"></i>Events</a></li>
-                <li><a href="../budget.php"><i class="fa-solid fa-laptop-code"></i>Budget Laptops</a></li>
-                <li><a href="../userdashboard.php"><i class="fa-solid fa-laptop"></i>Second-hand Laptops</a></li>
-                <div class="../gapbuysell">
-
-                    <li><a href="buy.php"><i class="fa-solid fa-cart-plus"></i>Buy</a></li>
-                    <li><a href="sell.php"><i class="fa-solid fa-sack-dollar"></i></i>Sell</a></li>
-                </div>
-
-                <li><a href="profile.php"><i class="fa-solid fa-user"></i>Your Profile</a></li>
-                <li><a href="about.html"><i class="fa-solid fa-info"></i>About</a></li>
+                <li><a href="admindashboard.php"><i class="fas fa-solid fa-house"></i>Home</a></li>
             </ul>
         </div>
     </label>
-    <!--side bar Nav ends here-->
+<!--side bar Nav ends here-->
 
-    <!--Nav bar-->
-    <nav class="navbar">
-        <div class="navdiv">
-            <div class="logo">
+<!--Nav bar-->
+<nav class="navbar">
+  <div class="navdiv">
+    <div class="logo">
 
-                <a href="index.html" class="title">Hamro laptop
+      <a href="admindashboard.php" class="title">Hamro laptop
 
-                </a>
-                <a style="margin-left: 190px;"> <img src="logo.jpg" height="30" /></a>
-            </div>
-            <ul>
-                <button><a href="../logout.php">Logout</a></button>
-
-            </ul>
-        </div>
-    </nav>
-    <br />
-    <!--nav bar ends here-->
+      </a>
+      <a style="margin-left: 190px; "> <img src="logo.jpg" height="30" /></a>
+    </div>
+    <ul>
+      <button><a href="../logout.php">Logout</a></button>
+  
+    </ul>
+  </div>
+</nav>
+<br />
+<!--nav bar ends here-->
         <h1 align="center">List Users <button><a href="admindashboard.php" style="font-size:30px; color:darkgreen;">X</a></button> </h1>
         <table border="2px">
           
@@ -129,24 +124,33 @@ table a {
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">User Name</th>
+                    <th scope="col">User Type</th>
+                    <th scope="col">Profile Picture</th>
+                    <th scope="col">Joined Date</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                $sql = "SELECT id, fullname FROM users;";
+                $sql = "SELECT id, fullname,user_type,created_at, image  FROM users";
                 $result = mysqli_query($conn, $sql);
 
                 if ($result) {
                     while ($row = mysqli_fetch_assoc($result)) {
                         $id = $row['id'];
                         $username = $row['fullname'];
-
+                        $usertype = $row['user_type'];
+                        $imageurl = $row['image'];
+                        $joindate = $row['created_at']; 
                         // Display each row
                         echo "
                         <tr>
                             <th scope='row'>$id</th>
-                            <td>$username</td>
+                            <td><a href='usersprofile.php?user_id=$id'>$username</td>
+                            <td>$usertype</td>
+                            <td><img src='../$imageurl' alt='Image' style='width: 100px; height: 100px; object-fit: cover;'></td>
+                            <td>$joindate</td>
+
                             <td>
                                 <a href='delete_user.php?id=$id' class='colordelete' onclick='return confirmDelete()'>Delete</a>
                             </td>

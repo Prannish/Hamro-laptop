@@ -1,7 +1,10 @@
 <?php
+include "../connection.php";
 session_start();
-include("../connection.php");
-
+if (!isset($_SESSION['name'])) {
+  header("location: ../login.php");
+  exit();
+}
 
 ?>
 
@@ -87,49 +90,38 @@ table a {
         <div class="slide">
             <br><br>
             <ul>
-                <li><a href="../index.html"><i class="fas fa-solid fa-house"></i>Home</a></li>
-                <li><a href="../event.php"><i class="fab fa-gripfire"></i>Events</a></li>
-                <li><a href="../budget.php"><i class="fa-solid fa-laptop-code"></i>Budget Laptops</a></li>
-                <li><a href="../userdashboard.php"><i class="fa-solid fa-laptop"></i>Second-hand Laptops</a></li>
-                <div class="../gapbuysell">
-
-                    <li><a href="buy.php"><i class="fa-solid fa-cart-plus"></i>Buy</a></li>
-                    <li><a href="sell.php"><i class="fa-solid fa-sack-dollar"></i></i>Sell</a></li>
-                </div>
-
-                <li><a href="profile.php"><i class="fa-solid fa-user"></i>Your Profile</a></li>
-                <li><a href="about.html"><i class="fa-solid fa-info"></i>About</a></li>
+                <li><a href="admindashboard.php"><i class="fas fa-solid fa-house"></i>Home</a></li>
             </ul>
         </div>
     </label>
-    <!--side bar Nav ends here-->
+<!--side bar Nav ends here-->
 
-    <!--Nav bar-->
-    <nav class="navbar">
-        <div class="navdiv">
-            <div class="logo">
+<!--Nav bar-->
+<nav class="navbar">
+  <div class="navdiv">
+    <div class="logo">
 
-                <a href="index.html" class="title">Hamro laptop
+      <a href="admindashboard.php" class="title">Hamro laptop
 
-                </a>
-                <a style="margin-left: 190px;"> <img src="logo.jpg" height="30" /></a>
-            </div>
-            <ul>
-                <button><a href="logout.php">Logout</a></button>
-                <button><a id="mode">Switch Theme</a></button>
-            </ul>
-        </div>
-    </nav>
-    <br />
-    <!--nav bar ends here-->
+      </a>
+      <a style="margin-left: 190px;"> <img src="logo.jpg" height="30" /></a>
+    </div>
+    <ul>
+      <button><a href="../logout.php">Logout</a></button>
+  
+    </ul>
+  </div>
+</nav>
+<br />
+<!--nav bar ends here-->
         <h1 align="center">View Budget Laptop <button><a href="admindashboard.php" style="font-size:30px; color:darkgreen;">X</a></button> </h1>
         <table class="table table-success table-striped">
         <thead>
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Laptop Name</th>
-                <th scope="col">Laptop Model</th>
-                <th scope="col">Laptop Specification</th>
+                <th scope="col">Laptop Specifications</th>
+                <th scope="col">Laptop Additional Details</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Image</th>
                 <th scope="col">Upload Date</th>
@@ -138,32 +130,36 @@ table a {
         </thead>
         <tbody>
             <?php
-                $sql = "SELECT l_id,l_name,l_model,l_specification,l_amount,l_image,l_uploaddate from budget_laptops";
+                $sql = "SELECT l_id,l_name,l_model,l_processor,l_ram,l_storage,l_display,l_amount,l_addinfo,l_image,l_uploaddate from budget_laptops";
                 $result = mysqli_query($conn, $sql);
 
                 if ($result) {
                     while ($row = mysqli_fetch_assoc($result)) {
-                        $id = $row['l_id'];
-                        $name = $row['l_name'];
-                        $model = $row['l_model'];
-                        $specification = $row['l_specification'];
-                        $amount = $row['l_amount'];
+                        $l_id = $row['l_id'];
+                        $l_name = $row['l_name'];
+                        $l_model = $row['l_model'];
+                        $l_processor = $row['l_processor'];
+                        $l_ram = $row['l_ram'];
+                        $l_storage = $row['l_storage'];
+                        $l_display = $row['l_display'];
+                        $l_amount = $row['l_amount'];
+                        $l_addinfo = $row['l_addinfo'];
+                        $imageUrl = $row['l_image'];
                         $uploaddate = $row['l_uploaddate'];
-                        $imageUrl = ($row['l_image']);
                         
                         // Display each row
                         echo "
                         <tr>
-                            <th scope='row'>$id</th>
-                            <td>$name</td>
-                            <td>$model</td>
-                            <td>$specification</td>
-                            <td>$amount</td>
+                            <th scope='row'>$l_id</th>
+                            <td>$l_name</td>
+                            <td>$l_model $l_processor $l_ram $l_storage $l_display</td>
+                            <td>$l_addinfo</td>
+                            <td>$l_amount</td>
                               <td><img src='../budget_laptops/$imageUrl' alt='Image' style='width: 100px; height: auto;'></td>
                             <td>$uploaddate</td>
                             <td>
-                                 <a href='modifybudgetlaptop.php?id=$id' class='colorupdate' />Update</a>
-                            <a href='deletebudgetlaptop.php?id=$id' class='colordelete'  onclick='return confirmDelete()'>Delete</a>
+                                 <a href='modifybudgetlaptop.php?id=$l_id' class='colorupdate' />Update</a>
+                            <a href='deletebudgetlaptop.php?id=$l_id' class='colordelete'  onclick='return confirmDelete()'>Delete</a>
                             </td>
                         </tr>
                         ";
