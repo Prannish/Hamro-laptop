@@ -5,6 +5,10 @@ session_start();
 if (isset($_SESSION['name'])) {
   header("location: /user/index.php");
 } 
+
+if(isset($_GET['signup'])){
+  echo '<script>alert("Signup successful! Please login to continue.")</script>';
+}
 ?>
 
 <!DOCTYPE html>

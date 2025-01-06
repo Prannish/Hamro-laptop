@@ -80,8 +80,8 @@ include "connection.php";
               $result = mysqli_query($conn, $sql); // returns True if data is inserted
               if ($result) {
                // f - Redirect user on login page
-               echo "<script>alert('Signup successful!');</script>";
-                header('Location: login.php');
+
+                header('Location: login.php?signup=success');
               
               }
               else{

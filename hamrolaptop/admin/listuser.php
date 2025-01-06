@@ -124,10 +124,10 @@ table a {
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">User Name</th>
-                    <th scope="col">User Type</th>
                     <th scope="col">Profile Picture</th>
                     <th scope="col">Joined Date</th>
                     <th scope="col">Action</th>
+                    <th scope="col">User Type</th>
                 </tr>
             </thead>
             <tbody>
@@ -143,6 +143,12 @@ table a {
                         $imageurl = $row['image'];
                         $joindate = $row['created_at']; 
                         // Display each row
+                        if($usertype == 'user'){
+                            $buttons = "<a href='delete_user.php?id=$id' class='colordelete' onclick='return confirmDelete()'>Delete</a>
+                            <a href='update_user_admin.php?id=$id' class='colorupdate' onclick='return confirmAdmin()'>Make Admin</a>";
+                        }else{
+                            $buttons = "<a href='delete_user.php?id=$id' class='colordelete' onclick='return confirmDelete()'>Delete</a>";
+                        }
                         echo "
                         <tr>
                             <th scope='row'>$id</th>
@@ -152,7 +158,7 @@ table a {
                             <td>$joindate</td>
 
                             <td>
-                                <a href='delete_user.php?id=$id' class='colordelete' onclick='return confirmDelete()'>Delete</a>
+                             $buttons
                             </td>
                         </tr>
                         ";
@@ -172,6 +178,11 @@ table a {
         <script>
             function confirmDelete() {
                 return confirm("Are you sure you want to delete this user?");
+            };
+
+            
+            function confirmAdmin() {
+                return confirm("Are you sure you want to make this user an admin?");
             };
         </script>
 </body>
