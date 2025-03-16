@@ -117,7 +117,7 @@ include "connection.php";
 
           <span id="emailerr" style="color:red;"></span>
           <span style="color:red;"><?php echo $dbError;?></span>
-          <input id="email" name="email" type="email" placeholder="Email" value="<?php echo $enteredEmail; ?>"/>
+          <input id="email" name="email" type="text" placeholder="Email" value="<?php echo $enteredEmail; ?>"/>
 
           <span id="passworderr" style="color:red;"></span>
           <input id="password" name="password" type="password" placeholder="Password" />
@@ -173,7 +173,12 @@ include "connection.php";
                 
                 hasError = true;
             }
-            
+
+            const emailPattern =  /^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\.com$/;
+            if (!emailPattern.test(email)) {
+              document.getElementById("emailerr").innerHTML = "Invalid email format!";
+              hasError = true;
+            }
             if (password === "" || password.length <= 6) {
     document.getElementById("passworderr").innerHTML = "Password must be more than 6 characters!";
     hasError = true;

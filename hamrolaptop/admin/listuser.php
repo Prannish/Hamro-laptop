@@ -126,8 +126,8 @@ table a {
                     <th scope="col">User Name</th>
                     <th scope="col">Profile Picture</th>
                     <th scope="col">Joined Date</th>
-                    <th scope="col">Action</th>
                     <th scope="col">User Type</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -153,9 +153,10 @@ table a {
                         <tr>
                             <th scope='row'>$id</th>
                             <td><a href='usersprofile.php?user_id=$id'>$username</td>
-                            <td>$usertype</td>
                             <td><img src='../$imageurl' alt='Image' style='width: 100px; height: 100px; object-fit: cover;'></td>
                             <td>$joindate</td>
+                            <td>$usertype</td>
+                            
 
                             <td>
                              $buttons
